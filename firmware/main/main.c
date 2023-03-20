@@ -451,7 +451,6 @@ static void telemetry_loop(void *args)
         xEventGroupSetBits(s_status_group, TELEMETRY_SENDING_BIT);
         xEventGroupClearBits(s_status_group, TELEMETRY_DONE_BIT);
 
-        led_update(HEARTBEAT);
         ESP_LOGI(TAG, "Reconnecting wifi to send telemetry");
         wifi_reconnect();
 

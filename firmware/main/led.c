@@ -55,14 +55,6 @@ void led_loop(void *args)
             gpio_set_level(LED_STATUS_PIN, 0);
 
         }
-        else if(led_status == HEARTBEAT)
-        {
-            gpio_set_level(LED_R_PIN,0);
-            gpio_set_level(LED_G_PIN,0);
-            gpio_set_level(LED_B_PIN,0);
-            gpio_set_level(LED_STATUS_PIN, 1);
-            led_update(IDLE); // only want this for one LED tick
-        }
         else if(led_status == PROCESSING)
         {
             gpio_set_level(LED_R_PIN,1);
