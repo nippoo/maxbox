@@ -303,30 +303,14 @@ static void update_ibutton_id(void)
     }
 }
 
-static void tag_handler(uint8_t* sn) // serial number is always 4 bytes long
+static void tag_handler(void *serial_no) // serial number is always 4 bytes long
 {
-    xEventGroupSetBits(s_status_group, TAG_PROCESSING_BIT);
-    led_update(PROCESSING);
+    const uint8_t* sn = (uint8_t *) serial_no;
 
     char card_id[9];
     sprintf(card_id, "%02x%02x%02x%02x", sn[0], sn[1], sn[2], sn[3]);
 
     ESP_LOGI(TAG, "Detected card %s", card_id);
-
-    // // wait for telemetry to return if we're already in the middle of an HTTP request.
-    // // for some reason, sending an HTTP request if we're already waiting for a response
-    // // can cause confusing behaviour (the JSON response sometimes gets sent to the wrong
-    // // callback function) so easier just to wait.
-
-    // if(xEventGroupGetBits(s_status_group) & TELEMETRY_SENDING_BIT)
-    // {
-    //     ESP_LOGI(TAG, "Waiting for telemetry operation to finish before processing card");
-    //     xEventGroupWaitBits(s_status_group,
-    //     TELEMETRY_DONE_BIT,
-    //     pdFALSE,
-    //     pdFALSE,
-    //     TELEMETRY_TIMEOUT_MS/portTICK_PERIOD_MS);
-    // }
 
     // first let's check if this is a tag in our operator card list
     int i;
@@ -373,6 +357,8 @@ static void tag_handler(uint8_t* sn) // serial number is always 4 bytes long
     touch_req.alert_on_error = pdTRUE;
 
     xTaskCreate(&http_auth_rfid, "http_auth_rfid", 8192, &touch_req, 2, NULL);
+
+    vTaskDelete(NULL);
 }
 
 static void update_battery_voltage(void)
@@ -444,9 +430,6 @@ static void telemetry_loop(void *args)
             vTaskDelay(60000 / portTICK_PERIOD_MS);
             continue;
         }
-
-        uint32_t free_heap_size = esp_get_free_heap_size();
-        ESP_LOGI(TAG, "Free heap is %zu", free_heap_size);
 
         xEventGroupSetBits(s_status_group, TELEMETRY_SENDING_BIT);
         xEventGroupClearBits(s_status_group, TELEMETRY_DONE_BIT);
@@ -535,14 +518,29 @@ static void tag_loop(void *args)
             ESP_LOGI(TAG, "Processing tag");
             xEventGroupClearBits(s_status_group, TAG_DONE_BIT);
             xEventGroupSetBits(s_status_group, TAG_PROCESSING_BIT);
-            tag_handler(serial_no);
-            xEventGroupWaitBits(s_status_group,
+            led_update(PROCESSING);
+
+            xTaskCreate(&tag_handler, "tag_handler", 8192, &serial_no, 2, NULL);
+
+            EventBits_t tagBits;
+            tagBits = xEventGroupWaitBits(s_status_group,
             TAG_DONE_BIT,
             pdTRUE,
             pdFALSE,
             TOUCH_TIMEOUT_MS/portTICK_PERIOD_MS);
             xEventGroupClearBits(s_status_group, TAG_PROCESSING_BIT);
-            ESP_LOGI(TAG, "Tag done");
+
+            if (tagBits & TAG_DONE_BIT)
+            {
+                ESP_LOGI(TAG, "Tag done");
+            }
+            else
+            {
+                ESP_LOGE(TAG, "Tag timeout");
+                led_update(ERROR);
+                vTaskDelay(5000 / portTICK_PERIOD_MS);
+                led_update(IDLE);
+            }
 
             if(xEventGroupGetBits(s_status_group) & TAG_PROCESSING_BIT)
             {

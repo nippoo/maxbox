@@ -140,7 +140,7 @@ void wifi_reconnect()
             WIFI_OPERATION_FINISHED_BIT,
             pdFALSE,
             pdFALSE,
-            portMAX_DELAY);
+            20000/portTICK_PERIOD_MS);
 
     if (!(xEventGroupGetBits(s_wifi_event_group) & WIFI_CONNECTED_BIT)) // we're already connected
     {
@@ -183,7 +183,7 @@ void wifi_disconnect()
             WIFI_OPERATION_FINISHED_BIT,
             pdFALSE,
             pdFALSE,
-            portMAX_DELAY);
+            20000/portTICK_PERIOD_MS);
     ESP_LOGI(TAG, "WiFi operations complete, disconnecting");
 
     if ((xEventGroupGetBits(s_wifi_event_group) & WIFI_CONNECTED_BIT)) // 
