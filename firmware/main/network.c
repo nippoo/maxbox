@@ -21,6 +21,8 @@
 // WiFi
 #define ESP_WIFI_SSID      CONFIG_ESP_WIFI_SSID
 #define ESP_WIFI_PASS      CONFIG_ESP_WIFI_PASSWORD
+#define API_SECRET         CONFIG_MAXBOX_API_SECRET
+#define FW_VERSION         CONFIG_MAXBOX_FW_VERSION
 
 #define ESP_MAXIMUM_RETRY           3
 #define MAX_HTTP_RECV_BUFFER        512
@@ -287,9 +289,9 @@ static esp_err_t _http_set_headers(esp_http_client_handle_t http_client)
     esp_http_client_set_header(http_client, "Accept", "application/json");
     esp_http_client_set_header(http_client, "Content-Type", "application/json");
     esp_http_client_set_header(http_client, "X-Carshare-Box-ID", mac_addr_string);
-    esp_http_client_set_header(http_client, "X-Carshare-Box-Secret", "s3cr3t-go3s-h3r3");
+    esp_http_client_set_header(http_client, "X-Carshare-Box-Secret", API_SECRET);
     esp_http_client_set_header(http_client, "X-Carshare-Operator-Card-List-ETag", rendered_etag);
-    esp_http_client_set_header(http_client, "X-Carshare-Firmware-Version", "8");
+    esp_http_client_set_header(http_client, "X-Carshare-Firmware-Version", FW_VERSION);
     return err;
 }
 

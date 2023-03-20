@@ -46,8 +46,8 @@
 
 #define ONEWIRE_PIN     26
 
-#define API_ENDPOINT_TOUCH          CONFIG_API_ROOT "touch"
-#define API_ENDPOINT_TELEMETRY      CONFIG_API_ROOT "telemetry"
+#define API_ENDPOINT_TOUCH          CONFIG_MAXBOX_API_ROOT "touch"
+#define API_ENDPOINT_TELEMETRY      CONFIG_MAXBOX_API_ROOT "telemetry"
 
 #define MAX_OPERATOR_CARDS          32
 
