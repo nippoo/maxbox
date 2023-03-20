@@ -164,10 +164,10 @@ void wifi_reconnect()
         /* xEventGroupWaitBits() returns the bits before the call returned, hence we can test which event actually
          * happened. */
         if (bits & WIFI_CONNECTED_BIT) {
-            ESP_LOGI(TAG, "Connected to SSID:%s password:%s",
-                     ESP_WIFI_SSID, ESP_WIFI_PASS);
+            ESP_LOGI(TAG, "Connected to SSID:%s",
+                     ESP_WIFI_SSID);
         } else if (bits & WIFI_FAIL_BIT) {
-            ESP_LOGI(TAG, "Failed to connect to SSID:%s, password:%s",
+            ESP_LOGI(TAG, "Failed to connect to SSID:%s",
                      ESP_WIFI_SSID, ESP_WIFI_PASS);
         } else {
             ESP_LOGE(TAG, "UNEXPECTED EVENT");
