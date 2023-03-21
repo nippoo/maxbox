@@ -79,7 +79,7 @@ struct maxbox {
     char operator_card_list[MAX_OPERATOR_CARDS][9];
 };
 
-int etag = -1;
+int32_t etag = -1;
 
 OneWireBus * owb;
 owb_rmt_driver_info rmt_driver_info;
