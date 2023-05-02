@@ -61,7 +61,7 @@ static void un_lock(void *xParameters)
     const uint8_t *lock = (uint8_t *) xParameters;
 
     twai_message_t packet1;
-    packet1.identifier = 0x756;
+    packet1.identifier = 0x745;
     packet1.data_length_code = 8;
 
     packet1.data[0] = 0x02;
@@ -74,7 +74,7 @@ static void un_lock(void *xParameters)
     packet1.data[7] = 0xff;
 
     twai_message_t packet2;
-    packet2.identifier = 0x756;
+    packet2.identifier = 0x745;
     packet2.data_length_code = 8;
 
     packet2.data[0] = 0x02;
@@ -87,7 +87,7 @@ static void un_lock(void *xParameters)
     packet2.data[7] = 0xff;
 
     twai_message_t packetlock;
-    packetlock.identifier = 0x756;
+    packetlock.identifier = 0x745;
     packetlock.data_length_code = 8;
 
     packetlock.data[0] = 0x04;

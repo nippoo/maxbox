@@ -288,6 +288,8 @@ static void update_ibutton_id(void)
     bool found = false;
     ESP_LOGI(TAG, "Searching for iButton...");
     owb_search_first(owb, &search_state, &found);
+    ESP_LOGI(TAG, "Finished iButton search");
+
     OneWireBus_ROMCode device_rom_code;
 
     if(pthread_mutex_lock(&hndl->vehicle->telemetrymux) == 0) // make sure telemetry isn't being updated as we set it
@@ -295,8 +297,12 @@ static void update_ibutton_id(void)
         hndl->vehicle->ibutton_id[0] = '\0';
         esp_err_t err = owb_read_rom(owb, &device_rom_code);
 
+        ESP_LOGI(TAG, "Read ROM code");
+
         if (err == ESP_OK) {
             owb_string_from_rom_code(device_rom_code, hndl->vehicle->ibutton_id, sizeof(hndl->vehicle->ibutton_id));
+            ESP_LOGI(TAG, "Read OWB string");
+
         }
 
         pthread_mutex_unlock(&hndl->vehicle->telemetrymux);
@@ -330,7 +336,7 @@ static void tag_handler(void *serial_no) // serial number is always 4 bytes long
                 vehicle_unlock_doors();
                 hndl->operator_car_lock = 0;
             }
-            return;
+        vTaskDelete(NULL);
         }
     }
 
@@ -520,7 +526,7 @@ static void tag_loop(void *args)
             xEventGroupSetBits(s_status_group, TAG_PROCESSING_BIT);
             led_update(PROCESSING);
 
-            xTaskCreate(&tag_handler, "tag_handler", 8192, &serial_no, 2, NULL);
+            xTaskCreate(&tag_handler, "tag_handler", 8192, serial_no, 2, NULL);
 
             EventBits_t tagBits;
             tagBits = xEventGroupWaitBits(s_status_group,
