@@ -63,7 +63,7 @@ sample code bearing this copyright.
 #include "esp_log.h"
 #include "hal/gpio_ll.h"
 
-#define OW_DEBUG
+#undef OW_DEBUG
 
 
 // bus reset: duration of low phase [us]
