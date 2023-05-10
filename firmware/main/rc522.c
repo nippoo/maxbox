@@ -55,6 +55,7 @@ static esp_err_t rc522_spi_init() {
     spi_device_interface_config_t devcfg = {
         .clock_speed_hz = 5000000,
         .mode = 0,
+        .address_bits = 8,
         .spics_io_num = hndl->config->sda_io,
         .queue_size = 7,
         .flags = SPI_DEVICE_HALFDUPLEX
@@ -77,18 +78,18 @@ static esp_err_t rc522_spi_init() {
 }
 
 static esp_err_t rc522_write_n(uint8_t addr, uint8_t n, uint8_t *data) {
-    uint8_t* buffer = (uint8_t*) malloc(n + 1);
-    buffer[0] = (addr << 1) & 0x7E;
+    uint8_t* buffer = (uint8_t*) malloc(n);
 
-    for (uint8_t i = 1; i <= n; i++) {
-        buffer[i] = data[i-1];
+    for (uint8_t i = 0; i < n; i++) {
+        buffer[i] = data[i];
     }
 
     spi_transaction_t t;
     memset(&t, 0, sizeof(t));
 
-    t.length = 8 * (n + 1);
-    t.tx_buffer = buffer;
+    t.length = 8 * (n);
+    t.tx_buffer = data;
+    t.addr = (addr << 1) & 0x7E;
 
     esp_err_t ret = spi_device_transmit(hndl->spi, &t);
 
@@ -111,9 +112,8 @@ static uint8_t* rc522_read_n(uint8_t addr, uint8_t n) {
 
     uint8_t* buffer = (uint8_t*) malloc(n);
     
-    t.flags = SPI_TRANS_USE_TXDATA;
-    t.length = 8;
-    t.tx_data[0] = ((addr << 1) & 0x7E) | 0x80;
+    t.length = 0;
+    t.addr = ((addr << 1) & 0x7E) | 0x80;
     t.rxlength = 8 * n;
     t.rx_buffer = buffer;
 
