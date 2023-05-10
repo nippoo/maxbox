@@ -87,7 +87,7 @@ static esp_err_t rc522_write_n(uint8_t addr, uint8_t n, uint8_t *data) {
     spi_transaction_t t;
     memset(&t, 0, sizeof(t));
 
-    t.length = 8 * (n);
+    t.length = 8 * n;
     t.tx_buffer = data;
     t.addr = (addr << 1) & 0x7E;
 

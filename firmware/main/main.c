@@ -33,18 +33,18 @@
 
 // GPIO
 
-#define RFID_MISO_PIN   5
-#define RFID_MOSI_PIN   18
-#define RFID_SCK_PIN    19
-#define RFID_SDA_PIN    21
-#define RFID_NRSTPD_PIN 17
-#define RFID_IRQ_PIN    22
+#define RFID_MISO_PIN   42
+#define RFID_MOSI_PIN   41
+#define RFID_SCK_PIN    40
+#define RFID_SDA_PIN    38
+#define RFID_NRSTPD_PIN 1
+#define RFID_IRQ_PIN    39
 
-#define CAN_TX_PIN      15
-#define CAN_RX_PIN      13
-#define CAN_SLEEP_PIN   16
+#define CAN_TX_PIN      8
+#define CAN_RX_PIN      18
+#define CAN_SLEEP_PIN   2
 
-#define ONEWIRE_PIN     26
+#define ONEWIRE_PIN     9
 
 #define API_ENDPOINT_TOUCH          CONFIG_MAXBOX_API_ROOT "touch"
 #define API_ENDPOINT_TELEMETRY      CONFIG_MAXBOX_API_ROOT "telemetry"
@@ -404,12 +404,12 @@ static bool adc_calibration_init(void)
 static void init_rfid(void)
 {
     const rc522_start_args_t start_args = {
-        .miso_io  = 5,
-        .mosi_io  = 18,
-        .sck_io   = 19,
-        .sda_io   = 21,
+        .miso_io  = RFID_MISO_PIN,
+        .mosi_io  = RFID_MOSI_PIN,
+        .sck_io   = RFID_SCK_PIN,
+        .sda_io   = RFID_SDA_PIN,
         .callback = &tag_handler,
-        .spi_host_id = VSPI_HOST
+        .spi_host_id = SPI3_HOST
     };
 
     rc522_init(&start_args);
